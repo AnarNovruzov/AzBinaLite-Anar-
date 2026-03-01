@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Services;
 
-public class JwtTokenGenerator: IJwtTokenGenerator
+public class JwtTokenGenerator : IJwtTokenGenerator
 {
     private readonly JwtOptions _options;
 
@@ -19,7 +19,7 @@ public class JwtTokenGenerator: IJwtTokenGenerator
         _options = options.Value;
     }
 
-    
+
 
     public string GenerateToken(User user)
     {
@@ -42,6 +42,7 @@ public class JwtTokenGenerator: IJwtTokenGenerator
             expires: DateTime.UtcNow.AddMinutes(_options.ExpirationMinutes),
             signingCredentials: credentials
         );
+
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }

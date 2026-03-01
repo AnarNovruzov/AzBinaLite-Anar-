@@ -15,11 +15,15 @@ public class BinaLiteDbContext: IdentityDbContext<User>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-       modelBuilder.ApplyConfigurationsFromAssembly(typeof(BinaLiteDbContext).Assembly);
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(BinaLiteDbContext).Assembly);
+
+        modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
     }
    public DbSet<PropertyAd> PropertyAds { get; set; }
     public DbSet<PropertyMedia> PropertyMedias { get; set; }
     public DbSet<City> Cities { get; set; }
-
+    public DbSet<User> users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     
 }

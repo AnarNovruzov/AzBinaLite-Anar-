@@ -1,4 +1,6 @@
-﻿using Application.Abstracts.Repositories;
+﻿using API.Options;
+using Application.Abstractions.Services;
+using Application.Abstracts.Repositories;
 using Application.Abstracts.Services;
 using Application.Options;
 using Application.Validations.Auth;
@@ -6,7 +8,6 @@ using Application.Validations.CityValidation;
 using Application.Validations.PropertyAdValidation;
 using Domain.Entities;
 using FluentValidation;
-using Infrastructure;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -15,7 +16,6 @@ using Microsoft.OpenApi.Models;
 using Persistence.Context;
 using Persistence.Repositories;
 using Persistence.Services;
-using System.Text.Json.Serialization;
 
 namespace API.Extensions;
 
@@ -68,7 +68,6 @@ public static class ServiceCollectionExtensions
     });
         });
 
-
         services.AddValidatorsFromAssemblyContaining<CreatePropertyAdValidator>();
         services.AddValidatorsFromAssemblyContaining<UpdatePropertyAdValidator>();
         services.AddValidatorsFromAssemblyContaining<CreateCityValidation>();
@@ -76,17 +75,6 @@ public static class ServiceCollectionExtensions
         services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-        services.AddScoped<IPropertyAdRepository, PropertyAdRepository>();
-        services.AddScoped<ICityRepository, CityRepository>();
-        //services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-
-
-        services.AddScoped<IPropertyAdService, PropertyAdService>();
-        services.AddScoped<ICityService, CityService>();
-       // services.AddScoped<IRefreshTokenService, RefreshTokenService>();
-
-        services.AddScoped<IAuthService, AuthService>();
 
         services
             .AddIdentity<User, IdentityRole>(opt =>
@@ -104,17 +92,31 @@ public static class ServiceCollectionExtensions
 
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
 
-        services.AddAuthorization();
-
 
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<ICityRepository, CityRepository>();
+        services.AddScoped<IPropertyAdRepository, PropertyAdRepository>();
+        
+        services.AddScoped<IPropertyAdService, PropertyAdService>();
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        services.AddScoped<ICityService, CityService>();
 
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-       .AddJwtBearer();
+        services.AddScoped<IAuthService, AuthService>();
+
+        services.ConfigureOptions<ConfigureJwtBearerOptions>();
+
+         
+        services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            });
+        services.AddAuthorization();
+        services.AddScoped<IEmailService, EmailService>();
+
+
 
 
 

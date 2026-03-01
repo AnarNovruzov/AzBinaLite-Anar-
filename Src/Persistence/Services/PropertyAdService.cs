@@ -5,6 +5,7 @@ using Application.Validations.PropertyAdValidation;
 using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Persistence.Repositories;
 using System.Linq;
 
@@ -16,17 +17,25 @@ public class PropertyAdService : IPropertyAdService
     private readonly IMapper _mapper;
     private readonly IValidator<CreatePropertyAdRequest> _createValidator;
     private readonly IValidator<UpdatePropertyAdRequest> _updateValidator;
+    private readonly IEmailService _emailService;
+    private readonly UserManager<User> _userManager;
 
-    public PropertyAdService(IPropertyAdRepository repository,IMapper mapper,
-        IValidator<CreatePropertyAdRequest> createvalidator,
-        IValidator<UpdatePropertyAdRequest> updatevalidator)
+    public PropertyAdService(
+    IPropertyAdRepository repository,
+    IMapper mapper,
+    IValidator<CreatePropertyAdRequest> createvalidator,
+    IValidator<UpdatePropertyAdRequest> updatevalidator,
+    IEmailService emailService,
+    UserManager<User> userManager)
     {
-
         _repository = repository;
         _mapper = mapper;
         _createValidator = createvalidator;
         _updateValidator = updatevalidator;
+        _emailService = emailService;
+        _userManager = userManager;
     }
+
     public async Task<bool> CreatePropertyAdAsync(CreatePropertyAdRequest request, CancellationToken ct = default)
     {
         await _createValidator.ValidateAndThrowAsync(request, cancellationToken: ct);
